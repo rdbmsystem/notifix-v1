@@ -28,24 +28,32 @@ const Home = () => {
   const withPosts = posts?.length;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-120px)]">
-      <div className="hidden lg:block lg:col-span-1 ">
+    <div className="relative h-full grid  xl:grid-cols-12 gap-4">
+      {/* Sidebar */}
+      <div className="hidden xl:block w-[18.8rem] fixed top-30  h-full z-1 ml-[-0.0rem]">
         <Sidebar user={authUser} />
       </div>
 
-      <div
-        className={`rounded-lg col-span-1 lg:col-span-2 order-first lg:order-none custom-scrollbar scroll-smooth h-[calc(100vh-120px)] ${
-          withPosts ? "overflow-y-auto" : "overflow-hidden"
-        }`}
-      >
+      {/* Right Sidebar */}
+      {recommendedUsers?.length > 0 && (
+        <div className="hidden xl:block w-[18.8rem] fixed top-30   h-full z-1 ml-[59.2rem]">
+          <div className="bg-secondary rounded-lg shadow p-4">
+            <h2 className="font-semibold mb-4">People you may know</h2>
+            {recommendedUsers.map((user) => (
+              <RecommendedUser key={user._id} user={user} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="xl:col-start-4 xl:col-end-10 flex-1 h-full">
         <PostCreation user={authUser} />
-        {/* <div className="rounded-lg min-h-[60vh] lg:h-[calc(100vh-120px)] max-h-[80vh]
-        scroll-smooth flex flex-col overflow-y-auto custom-scrollbar"> */}
         <div>
           {withPosts > 0 ? (
             posts.map((post) => <Post key={post._id} post={post} />)
           ) : (
-            <div className="justify-center">
+            <div className="flex justify-center">
               <div className="bg-white rounded-lg shadow p-8 text-center">
                 <div className="mb-6">
                   <Users size={64} className="mx-auto text-gray-500" />
@@ -61,17 +69,6 @@ const Home = () => {
           )}
         </div>
       </div>
-
-      {recommendedUsers?.length > 0 && (
-        <div className="col-span-1  lg:col-span-1 hidden lg:block">
-          <div className="bg-secondary rounded-lg shadow p-4">
-            <h2 className="font-semibold mb-4">People you may know</h2>
-            {recommendedUsers.map((user) => (
-              <RecommendedUser key={user._id} user={user} />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -9,7 +9,7 @@ export const getSuggestedConnections = async (req, res) => {
       _id: { $ne: req.user._id, $nin: currentUser.connections },
     })
       .select("name username profilePicture headline")
-      .limit(3);
+      .limit(10);
 
     res.json(suggestedUser);
   } catch (error) {

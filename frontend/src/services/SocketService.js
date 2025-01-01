@@ -12,9 +12,17 @@ export const emitNewComment = async (
   comment,
   userId,
   name,
-  profilePicture
+  profilePicture,
+  headline
 ) => {
-  socket.emit("newComment", { postId, comment, userId, name, profilePicture });
+  socket.emit("newComment", {
+    postId,
+    comment,
+    userId,
+    name,
+    profilePicture,
+    headline,
+  });
 };
 
 export const listenForComments = (callback) => {

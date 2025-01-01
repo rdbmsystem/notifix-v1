@@ -19,12 +19,12 @@ const NetworkPage = () => {
   });
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 scroll-smooth gap-6 h-[calc(100vh-120px)]">
-      <div className="col-span-1 lg:col-span-1">
+    <div className="relative h-full grid  xl:grid-cols-12 gap-4">
+      <div className="hidden xl:block w-[18.8rem] fixed top-30  h-full z-10 ml-[-0.0rem]">
         <Sidebar user={user} />
       </div>
 
-      <div className="rounded-lg   scroll-smooth   col-span-1 lg:col-span-3  h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+      <div className="xl:col-start-4 xl:col-end-13 flex-1  h-full">
         <div className="bg-secondary rounded-lg shadow p-6 ">
           <h1 className="text-2xl font-bold mb-6">My Network</h1>
 

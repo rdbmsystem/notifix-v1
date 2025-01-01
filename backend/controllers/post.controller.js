@@ -9,7 +9,7 @@ export const getFeedPosts = async (req, res) => {
       author: { $in: [...req.user.connections, req.user._id] },
     })
       .populate("author", "name username profilePicture headline")
-      .populate("comments.user", "name profilePicture")
+      .populate("comments.user", "name profilePicture headline username")
       .sort({ createdAt: -1 });
 
     res.status(200).json(posts);

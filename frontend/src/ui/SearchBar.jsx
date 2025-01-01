@@ -4,11 +4,11 @@ import { InputBase } from "@mui/material";
 const SearchBar = () => {
   return (
     <div className=" relative hover:bg-white/25 w-full">
-      <div className="absolute flex items-center z-10 justify-center px-2 h-full ">
+      <div className="absolute flex items-center z-10 justify-center px-3 h-full ">
         <IoSearch />
       </div>
       <div className="text-inherit text-sm rounded-full bg-base-200 px-4 pl-[calc(1em+1rem)] py-1  w-full transition-width ">
-        <InputBase placeholder="Search" />
+        <InputBase className=" px-2" placeholder="Search" />
       </div>
     </div>
   );

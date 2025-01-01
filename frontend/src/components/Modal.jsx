@@ -36,7 +36,7 @@ const Window = ({ children, name }) => {
       >
         <button
           onClick={close}
-          className=" bg-none border-non p-[0.4rem] rounded-full translate-x-[0.8rem] transition-all duration-200 absolute top-[.7rem] right-[1.3rem] hover:bg-gray-100"
+          className=" bg-none border-none p-[0.4rem] rounded-full translate-x-[0.8rem] transition-all duration-200 absolute top-[.7rem] right-[1.3rem] hover:bg-gray-100"
         >
           <HiXMark className="w-[1.4rem] h-[1.4rem] text-gray-500" />
         </button>

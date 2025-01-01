@@ -1,11 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { Loader, MessageCircle, Send, ThumbsUp, Trash2 } from "lucide-react";
+import {
+  Bookmark,
+  Loader,
+  MessageCircle,
+  MoreVertical,
+  PencilIcon,
+  SendHorizonal,
+  Share2,
+  ThumbsUp,
+  Trash,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-// import { io } from "socket.io-client";
 import {
   connectSocket,
   disconnectSocket,
@@ -13,51 +22,39 @@ import {
   listenForComments,
 } from "../services/SocketService";
 import PostAction from "./PostAction";
-
-// const socket = io("http://localhost:5000", {
-//   withCredentials: true,
-// });
+import Popover from "./Popover";
+import useClickOutside from "../hooks/useOutsideClick";
 
 const Post = ({ post }) => {
   const postId = post._id;
-  // const { postId } = useParams();
-
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState(post.comments || []);
   const isOwner = authUser._id === post.author._id;
   const isLiked = post.likes.includes(authUser._id);
-
+  const [showFullContent, setShowFullContent] = useState(false);
+  const [activePopover, setActivePopover] = useState(false);
+  const dropdownRef = useRef(null);
   const queryClient = useQueryClient();
+
+  useClickOutside(dropdownRef, () => setActivePopover(false));
 
   useEffect(() => {
     const socket = connectSocket();
     console.log("Socket connected:", socket.connected);
-    // socket.on("receiveComment", ({ postId: updatedPostId, comment }) => {
-    //   console.log("Received comment:", comment);
-    //   console.log(updatedPostId, post._id);
-
-    //   if (updatedPostId === post._id) {
-    //     setComments((prev) => [...prev, comment]);
-    //   }
-    // });
-    // console.log(post.comments);
 
     listenForComments((data) => {
-      console.log("Received comment:", data);
-      // const x = post.comments.filter((postId) => postId._id === data.postId);
-      // console.log(x, "Juuu");
       if (data.postId === postId) {
         setComments((prevComments) => [
           ...prevComments,
-
           {
             content: data.comment,
             user: {
               _id: data.userId,
               name: data.name,
               profilePicture: data.profilePicture,
+              headline: data.headline,
             },
             createdAt: new Date(),
           },
@@ -69,7 +66,6 @@ const Post = ({ post }) => {
       disconnectSocket();
     };
   }, [postId]);
-
   const { mutate: deletePost, isPending: isDeletingPost } = useMutation({
     mutationFn: async () => {
       await axiosInstance.delete(`/posts/delete/${post._id}`);
@@ -82,7 +78,6 @@ const Post = ({ post }) => {
       toast.error(error.message);
     },
   });
-
   const { mutate: createComment, isPending: isAddingComment } = useMutation({
     mutationFn: async (newComment) => {
       await axiosInstance.post(`/posts/${post._id}/comment`, {
@@ -90,14 +85,13 @@ const Post = ({ post }) => {
       });
     },
     onSuccess: (_, newComment) => {
-      // socket.emit("newComment", { postId: post._id, comment: newComment });
-
       emitNewComment(
         postId,
         newComment,
         authUser._id,
         authUser.name,
-        authUser.profilePicture
+        authUser.profilePicture,
+        authUser.headline
       );
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       toast.success("Comment added successfully");
@@ -106,7 +100,6 @@ const Post = ({ post }) => {
       toast.error(err.response.data.message || "Failed to add comment");
     },
   });
-
   const { mutate: likePost, isPending: isLikingPost } = useMutation({
     mutationFn: async () => {
       await axiosInstance.post(`/posts/${post._id}/like`);
@@ -116,17 +109,19 @@ const Post = ({ post }) => {
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
     },
   });
-
+  const toggleContent = () => {
+    setShowFullContent(!showFullContent);
+  };
+  const togglePopover = () => {
+    setActivePopover(!activePopover);
+  };
   const handleDeletePost = () => {
-    // if (!window.confirm("Are you sure you want to delete this post?")) return;
     deletePost();
   };
-
   const handleLikePost = async () => {
     if (isLikingPost) return;
     likePost();
   };
-
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (newComment.trim()) {
@@ -134,61 +129,113 @@ const Post = ({ post }) => {
       setNewComment("");
     }
   };
+  const contentPreview =
+    post.content && post.content.length > 200 && !showFullContent
+      ? `${post.content.slice(0, 200)}...`
+      : post.content || "";
 
   return (
     <div className="bg-secondary rounded-lg shadow mt-4">
-      <div className="p-4">
+      <div className="pt-4 px-4 ">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <Link to={`/profile/${post?.author?.username}`}>
               <img
                 src={post.author.profilePicture || "/avatar.png"}
                 alt={post.author.name}
-                className="size-10 rounded-full mr-3 border border-gray-300"
+                className="size-10 rounded-full mr-3 border object-cover border-gray-300"
               />
             </Link>
-
             <div>
-              <Link to={`/profile/${post?.author?.username}`}>
-                <h3 className="font-semibold">{post.author.name}</h3>
-              </Link>
+              <div className="flex flex-col sm:flex-row  items-center">
+                <Link to={`/profile/${post?.author?.username}`}>
+                  <h3 className="font-semibold">{post.author.name}</h3>
+                </Link>
+                <span className="mx-2 text-info hidden sm:inline">•</span>
+                <p className="text-xs text-info">
+                  {formatDistanceToNow(new Date(post.createdAt), {
+                    addSuffix: true,
+                  })}
+                </p>
+              </div>
               <p className="text-xs text-info">{post.author.headline}</p>
-              <p className="text-xs text-info">
-                {formatDistanceToNow(new Date(post.createdAt), {
-                  addSuffix: true,
-                })}
-              </p>
             </div>
           </div>
           {isOwner && (
-            <button
-              onClick={handleDeletePost}
-              className="text-red-500 hover:text-red-700"
-            >
-              {isDeletingPost ? (
-                <Loader size={18} className="animate-spin" />
-              ) : (
-                <Trash2 size={18} />
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={togglePopover}
+                className="text-info hover:text-gray-700 hover:bg-gray-200  p-2 rounded-full"
+              >
+                <MoreVertical size={18} />
+              </button>
+              {activePopover && (
+                <Popover className="absolute right-4 bg-secondary  rounded-b-lg rounded-tl-lg shadow-sides w-[12rem] p-2  z-20 ">
+                  <button className="flex items-center p-1  text-info hover:bg-base-100 w-full text-sm rounded-md transition-all ">
+                    <PencilIcon size={16} className="mr-2" />
+                    <span>Edit post</span>
+                  </button>
+                  <button className="flex items-center  p-1  text-info hover:bg-base-100 w-full text-sm rounded-md  transition-all">
+                    <Bookmark size={16} className="mr-2" />
+                    <span>Save post</span>
+                  </button>
+                  <button
+                    onClick={handleDeletePost}
+                    className="flex items-center  p-1  text-info hover:bg-base-100 w-full text-sm rounded-md  transition-all"
+                  >
+                    {isDeletingPost ? (
+                      <Loader size={16} className="animate-spin mr-2" />
+                    ) : (
+                      <Trash size={16} className="mr-2" />
+                    )}
+                    <span>Move to trash</span>
+                  </button>
+                </Popover>
               )}
-            </button>
+            </div>
           )}
         </div>
-        <p className="mb-4">{post.content}</p>
-        {post.image && (
+        <div className="w-full overflow-hidden">
+          <p className="mb-4 break-words">
+            {contentPreview}
+            {post.content && post.content.length > 200 && (
+              <span
+                className="text-gray-500 cursor-pointer"
+                onClick={toggleContent}
+              >
+                {showFullContent ? " Show less" : " Show more"}
+              </span>
+            )}
+          </p>
+        </div>
+      </div>
+      {post.image && (
+        <div className="relative w-full">
+          <div className="absolute inset-0 bg-cover bg-center bg-base-200 z-0 "></div>
           <img
             src={post.image}
             alt="Post content"
-            className="rounded-lg w-full mb-4"
+            className="relative object-cover mx-auto   "
           />
-        )}
+        </div>
+      )}
 
-        <div className="flex justify-between text-info">
+      <div className="pt-4 px-4 mb-2 ">
+        <div
+          className={
+            showComments
+              ? "flex justify-between text-info py-1  border-gray-300 border-y"
+              : "flex justify-between text-info py-1 border-gray-300 border-t"
+          }
+        >
           <PostAction
             icon={
               <ThumbsUp size={17} className={isLiked ? "text-blue-600" : ""} />
             }
             text={
-              <span className={`text-[14px] ${isLiked ? "text-blue-600" : ""}`}>
+              <span
+                className={`text-[14px]  ${isLiked ? "text-blue-600" : ""}`}
+              >
                 {post.likes.length === 0
                   ? "Like"
                   : post.likes.length === 1
@@ -202,61 +249,91 @@ const Post = ({ post }) => {
           <PostAction
             icon={<MessageCircle size={17} />}
             text={
-              <span className="text-[14px]">Comment ({comments.length})</span>
+              <span className="text-[14px]">
+                {comments.length === 0
+                  ? "Comment"
+                  : comments.length === 1
+                  ? `Comment (${comments.length})`
+                  : `Comments (${comments.length})`}
+              </span>
             }
             onClick={() => setShowComments(!showComments)}
+          />
+
+          <PostAction
+            icon={<Share2 size={17} />}
+            text={<span className="text-[14px] ">Share</span>}
           />
         </div>
       </div>
 
       {showComments && (
-        <div className="px-4 pb-4">
-          <div className="mb-4 max-h-60 overflow-y-auto">
+        <div className="pb-4 px-4">
+          <div className="max-h-60 overflow-y-auto will-change-scroll scroll-smooth">
             {comments
-              ?.filter((comment) => comment && comment.user) // Filter out null, undefined, or comments without a user
+              ?.filter((comment) => comment && comment.user)
               .map((comment, i) => (
                 <div
-                  key={comment._id || `temp-${i}`} // Ensure a unique key
-                  className="mb-2 bg-base-100 p-2 rounded flex items-start"
+                  key={comment._id || `temp-${i}`}
+                  className=" p-2 rounded flex items-start"
                 >
-                  <img
-                    src={comment.user.profilePicture || "/avatar.png"}
-                    alt={comment.user.name || "User"}
-                    className="w-8 h-8 rounded-full mr-2 flex-shrink-0"
-                  />
-                  <div className="flex-grow">
-                    <div className="flex items-center mb-1">
-                      <span className="font-semibold mr-2">
-                        {comment.user.name || "Unknown User"}
-                      </span>
+                  <Link to={`/profile/${comment?.user?.username}`}>
+                    <img
+                      src={comment.user.profilePicture || "/avatar.png"}
+                      alt={comment.user.name || "User"}
+                      className="w-9 h-9 border rounded-full mr-1 flex-shrink-0 object-cover"
+                    />
+                  </Link>
+                  <div className="inline-block  bg-gray-100 px-5 py-1 rounded-[20px] break-words overflow-hidden ">
+                    <div className="flex items-center">
+                      <Link to={`/profile/${comment?.user?.username}`}>
+                        <span className="font-semibold text-sm">
+                          {comment.user.name || "Unknown User"}
+                        </span>
+                      </Link>
+                      <span className="mx-2 text-info hidden sm:inline">•</span>
                       <span className="text-xs text-info">
                         {formatDistanceToNow(new Date(comment.createdAt))}
                       </span>
                     </div>
-                    <p>{comment.content}</p>
+                    <p className="text-xs text-info">{comment.user.headline}</p>
+                    <p className="break-words whitespace-pre-wrap">
+                      {comment.content}
+                    </p>
                   </div>
                 </div>
               ))}
           </div>
-
-          <form onSubmit={handleAddComment} className="flex items-center">
+          <form
+            onSubmit={handleAddComment}
+            className="relative flex items-center pt-2 gap-x-1"
+          >
+            <img
+              src={authUser.profilePicture || "/avatar.png"}
+              alt={"user.name"}
+              className="w-10 h-10 rounded-full border border-gray-300 object-cover"
+            />
             <input
+              autoFocus
               type="text"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Add a comment..."
-              className="flex-grow p-2 rounded-l-full bg-base-100 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="rounded-full block w-full px-4 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm pr-12"
             />
-
             <button
               type="submit"
-              className="bg-primary text-white p-2 rounded-r-full hover:bg-primary-dark transition duration-300"
-              disabled={isAddingComment}
+              className={`absolute right-2 transition duration-300  ${
+                newComment.trim()
+                  ? "text-primary  hover:text-primary-dark"
+                  : " text-gray-300"
+              }`}
+              disabled={!newComment.trim() || isAddingComment}
             >
               {isAddingComment ? (
                 <Loader size={18} className="animate-spin" />
               ) : (
-                <Send size={18} />
+                <SendHorizonal size={18} />
               )}
             </button>
           </form>

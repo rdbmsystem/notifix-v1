@@ -1,22 +1,28 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-export const useOutsideClick = (handler, listCapturing = true) => {
-  const ref = useRef();
-  useEffect(
-    function () {
-      function handleClick(e) {
-        if (ref.current && !ref.current.contains(e.target)) {
-          handler();
-        }
+const useClickOutside = (ref, callback, triggerRef) => {
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      console.log(ref.current);
+      if (
+        ref.current &&
+        !ref.current.contains(e.target) &&
+        (!triggerRef ||
+          (triggerRef.current && !triggerRef.current.contains(e.target)))
+      ) {
+        callback();
       }
+    };
 
-      document.addEventListener("click", handleClick, listCapturing);
+    // Ensure that the effect runs only when refs are assigned
+    if (ref.current || (triggerRef && triggerRef.current)) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
 
-      return () =>
-        document.removeEventListener("click", handleClick, listCapturing);
-    },
-    [handler, listCapturing]
-  );
-
-  return ref;
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, callback, triggerRef]);
 };
+
+export default useClickOutside;

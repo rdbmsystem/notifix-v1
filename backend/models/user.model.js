@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     profilePicture: { type: String, default: "" },
     bannerImg: { type: String, default: "" },
-    headline: { type: String, default: "LinkedIn User" },
+    headline: { type: String, default: "New Member" },
     location: { type: String, default: "Earth" },
     about: { type: String, default: "" },
     skills: [String],

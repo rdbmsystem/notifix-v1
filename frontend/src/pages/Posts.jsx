@@ -17,12 +17,11 @@ const Posts = () => {
   if (!post?.data) return <div>Post not found</div>;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      <div className="hidden lg:block lg:col-span-1">
+    <div className="relative h-full grid  xl:grid-cols-12 gap-4">
+      <div className="hidden xl:block w-[18.8rem] fixed top-30  h-full z-10 ml-[-0.0rem]">
         <Sidebar user={authUser} />
       </div>
-
-      <div className="col-span-1 lg:col-span-3 ">
+      <div className=" xl:col-start-4 xl:col-end-13 flex-1  h-full ">
         <Post post={post.data} />
       </div>
     </div>

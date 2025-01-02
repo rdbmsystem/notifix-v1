@@ -3,8 +3,9 @@ import { AiOutlineDashboard } from "react-icons/ai";
 import { HiOutlineFlag, HiOutlineUserGroup } from "react-icons/hi2";
 import { IoBookmarkOutline, IoTicketOutline } from "react-icons/io5";
 import { PiStorefront } from "react-icons/pi";
+import React from "react";
 
-export default function Sidebar({ user }) {
+const Sidebar = ({ user }) => {
   return (
     <div className="bg-secondary rounded-lg shadow h-[calc(100vh-110px)] flex flex-col ">
       <div className="text-center">
@@ -96,4 +97,6 @@ export default function Sidebar({ user }) {
       </div>
     </div>
   );
-}
+};
+
+export default React.memo(Sidebar);

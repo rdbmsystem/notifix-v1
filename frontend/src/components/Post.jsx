@@ -135,7 +135,7 @@ const Post = ({ post }) => {
       : post.content || "";
 
   return (
-    <div className="bg-secondary rounded-lg shadow mt-4">
+    <div className="bg-secondary rounded-lg shadow mb-4">
       <div className="pt-4 px-4 ">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">

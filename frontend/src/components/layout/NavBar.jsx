@@ -259,8 +259,10 @@ const Navbar = () => {
                       <div className="border-b"></div>
 
                       {/* Third level popover here */}
-                      <div className="flex flex-col overflow-auto h-[35rem] px-1 pt-1">
-                        <Notification />
+                      <div className="flex flex-col overflow-y-auto h-[35rem] px-1 pt-1 will-change-scroll scroll-smooth">
+                        <Notification
+                          togglePopoverFirstLevel={togglePopoverFirstLevel}
+                        />
                       </div>
                       {/* Third level popover here */}
 

@@ -79,7 +79,7 @@ const AddPostForm = ({ user, onClose }) => {
             <img
               src={user.profilePicture || "/avatar.png"}
               alt={user.name}
-              className="w-10 h-10 rounded-full border border-gray-300 object-cover"
+              className="w-10 h-10 rounded-full  border-gray-300 object-cover"
             />
             <input
               type="text"

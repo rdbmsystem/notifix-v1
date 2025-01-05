@@ -19,7 +19,7 @@ const Sidebar = ({ user }) => {
           <img
             src={user.profilePicture || "/avatar.png"}
             alt={user.name}
-            className="w-20 h-20 rounded-full mx-auto mt-[-40px] object-cover border-2 border-gray-300"
+            className="w-20 h-20 rounded-full mx-auto mt-[-40px] object-cover  border-gray-300"
           />
           <h2 className="text-xl font-semibold mt-2">{user.name}</h2>
         </NavLink>

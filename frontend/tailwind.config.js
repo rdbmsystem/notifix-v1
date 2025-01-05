@@ -22,8 +22,9 @@ export default {
           neutral: "#000000", // Black (for text)
           info: "#5E5E5E", // Dark Gray (for secondary text)
           success: "#0A66C2", // Blue
-          warning: "#F5C75D", // Yellow (for warnings)
+          warning: "#ED7B58", // Yellow (for warnings)
           error: "#CC1016", // Red (for errors)
+          tertiary: "#F5C75D", // Burnt sianna (for warnings)
 
           "base-0": "#fff",
           "base-50": "#f9fafb",

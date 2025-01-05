@@ -14,7 +14,7 @@ const PostCreation = ({ user }) => {
         <img
           src={user.profilePicture || "/avatar.png"}
           alt={user.name}
-          className="size-10 rounded-full border object-cover border-gray-300 mr-3"
+          className="size-10 rounded-full  object-cover border-gray-300 mr-3"
         />
         <button
           onClick={openModal}

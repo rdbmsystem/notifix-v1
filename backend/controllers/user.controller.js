@@ -1,17 +1,51 @@
 import cloudinary from "../lib/cloudinary.js";
 import User from "../models/user.model.js";
 
+// export const getSuggestedConnections = async (req, res) => {
+//   try {
+//     const currentUser = await User.findById(req.user._id).select("connections");
+
+//     const suggestedUser = await User.find({
+//       _id: { $ne: req.user._id, $nin: currentUser.connections },
+//     })
+//       .select("name username profilePicture headline")
+//       .limit(5);
+
+//     res.json(suggestedUser);
+//   } catch (error) {
+//     console.error("Error in getSuggestedConnections controller: ", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
 export const getSuggestedConnections = async (req, res) => {
   try {
     const currentUser = await User.findById(req.user._id).select("connections");
 
-    const suggestedUser = await User.find({
-      _id: { $ne: req.user._id, $nin: currentUser.connections },
-    })
-      .select("name username profilePicture headline")
-      .limit(10);
+    const suggestedUsers = await User.aggregate([
+      // Exclude the current user and their connections
+      {
+        $match: {
+          _id: { $ne: req.user._id, $nin: currentUser.connections },
+        },
+      },
+      // Project only the required fields
+      {
+        $project: {
+          name: 1,
+          username: 1,
+          profilePicture: 1,
+          headline: 1,
+        },
+      },
+      // Randomly sample 10 users
+      {
+        $sample: { size: 3 },
+      },
+      { $limit: 3 },
+    ]);
 
-    res.json(suggestedUser);
+    res.json(suggestedUsers);
   } catch (error) {
     console.error("Error in getSuggestedConnections controller: ", error);
     res.status(500).json({ message: "Server error" });

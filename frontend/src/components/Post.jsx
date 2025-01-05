@@ -143,7 +143,7 @@ const Post = ({ post }) => {
               <img
                 src={post.author.profilePicture || "/avatar.png"}
                 alt={post.author.name}
-                className="size-10 rounded-full mr-3 border object-cover border-gray-300"
+                className="size-10 rounded-full mr-3  object-cover border-gray-300"
               />
             </Link>
             <div>
@@ -281,7 +281,7 @@ const Post = ({ post }) => {
                     <img
                       src={comment.user.profilePicture || "/avatar.png"}
                       alt={comment.user.name || "User"}
-                      className="w-9 h-9 border rounded-full mr-1 flex-shrink-0 object-cover"
+                      className="w-9 h-9  rounded-full mr-1 flex-shrink-0 object-cover"
                     />
                   </Link>
                   <div className="inline-block  bg-gray-100 px-5 py-1 rounded-[20px] break-words overflow-hidden ">

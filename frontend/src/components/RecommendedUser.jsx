@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { Check, Clock, UserCheck, UserPlus, X } from "lucide-react";
+import { Check, Clock, Loader, UserCheck, UserPlus, X } from "lucide-react";
 
 const RecommendedUser = ({ user }) => {
   const queryClient = useQueryClient();
@@ -58,10 +58,11 @@ const RecommendedUser = ({ user }) => {
     if (isLoading) {
       return (
         <button
-          className="px-3 py-1 rounded-full text-sm bg-gray-200 text-gray-500"
+          className="px-3 py-1 rounded-full text-sm bg-gray-200 text-gray-500 flex items-center"
           disabled
         >
-          Loading...
+          <Loader size={16} className="animate-spin mr-2" />
+          Loading
         </button>
       );
     }
@@ -70,7 +71,7 @@ const RecommendedUser = ({ user }) => {
       case "pending":
         return (
           <button
-            className="px-3 py-1 rounded-full text-sm bg-yellow-500 text-white flex items-center"
+            className="px-3 py-1 rounded-full text-sm   flex items-center  bg-gray-200 text-gray-500 "
             disabled
           >
             <Clock size={16} className="mr-1" />
@@ -79,18 +80,20 @@ const RecommendedUser = ({ user }) => {
         );
       case "received":
         return (
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-2 ">
             <button
               onClick={() => acceptRequest(connectionStatus.data.requestId)}
-              className={`rounded-full p-1 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white`}
+              className={`rounded-full px-3 p-1 text-sm flex items-center justify-center bg-green-500 hover:bg-green-600 text-white`}
             >
-              <Check size={16} />
+              <Check size={16} className="mr-1" />
+              Accept
             </button>
             <button
               onClick={() => rejectRequest(connectionStatus.data.requestId)}
-              className={`rounded-full p-1 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white`}
+              className={`rounded-full  px-3 p-1 flex text-sm items-center justify-center bg-red-500 hover:bg-red-600 text-white`}
             >
-              <X size={16} />
+              <X size={16} className="mr-1" />
+              Decline
             </button>
           </div>
         );
@@ -125,22 +128,22 @@ const RecommendedUser = ({ user }) => {
   };
 
   return (
-    <div className="flex items-center justify-between mb-4">
-      <Link
-        to={`/profile/${user.username}`}
-        className="flex items-center flex-grow"
-      >
-        <img
-          src={user.profilePicture || "/avatar.png"}
-          alt={user.name}
-          className="w-12 h-12 rounded-full mr-3"
-        />
-        <div>
-          <h3 className="font-semibold text-sm">{user.name}</h3>
-          <p className="text-xs text-info">{user.headline}</p>
-        </div>
-      </Link>
-      {renderButton()}
+    <div className="flex flex-col justify-between    hover:bg-gray-100 transition-all p-2 rounded-md">
+      <div className="flex items-center">
+        <Link to={`/profile/${user.username}`} className="flex items-center">
+          <img
+            src={user.profilePicture || "/avatar.png"}
+            alt={user.name}
+            className="w-12 h-12 rounded-full mr-3 object-cover"
+          />
+          <div>
+            <h3 className="font-semibold text-md">{user.name}</h3>
+            <p className="text-xs text-info">{user.headline}</p>
+          </div>
+        </Link>
+      </div>
+
+      <div className="ml-[3.7rem]">{renderButton()}</div>
     </div>
   );
 };

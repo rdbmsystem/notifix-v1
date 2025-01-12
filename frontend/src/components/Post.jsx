@@ -284,22 +284,28 @@ const Post = ({ post }) => {
                       className="w-9 h-9  rounded-full mr-1 flex-shrink-0 object-cover"
                     />
                   </Link>
-                  <div className="inline-block  bg-gray-100 px-5 py-1 rounded-[20px] break-words overflow-hidden ">
-                    <div className="flex items-center">
-                      <Link to={`/profile/${comment?.user?.username}`}>
-                        <span className="font-semibold text-sm">
-                          {comment.user.name || "Unknown User"}
+                  <div className="w-[90%]">
+                    <div className="inline-block  bg-gray-100 px-5 py-1 rounded-[20px] break-words overflow-hidden ">
+                      <div className="flex items-center">
+                        <Link to={`/profile/${comment?.user?.username}`}>
+                          <span className="font-semibold text-sm">
+                            {comment.user.name || "Unknown User"}
+                          </span>
+                        </Link>
+                        <span className="mx-2 text-info hidden sm:inline">
+                          •
                         </span>
-                      </Link>
-                      <span className="mx-2 text-info hidden sm:inline">•</span>
-                      <span className="text-xs text-info">
-                        {formatDistanceToNow(new Date(comment.createdAt))}
-                      </span>
+                        <span className="text-xs text-info">
+                          {formatDistanceToNow(new Date(comment.createdAt))}
+                        </span>
+                      </div>
+                      <p className="text-xs text-info">
+                        {comment.user.headline}
+                      </p>
+                      <p className="break-words whitespace-pre-wrap">
+                        {comment.content}
+                      </p>
                     </div>
-                    <p className="text-xs text-info">{comment.user.headline}</p>
-                    <p className="break-words whitespace-pre-wrap">
-                      {comment.content}
-                    </p>
                   </div>
                 </div>
               ))}
@@ -311,7 +317,7 @@ const Post = ({ post }) => {
             <img
               src={authUser.profilePicture || "/avatar.png"}
               alt={"user.name"}
-              className="w-10 h-10 rounded-full border border-gray-300 object-cover"
+              className="w-10 h-10 rounded-full object-cover"
             />
             <input
               autoFocus

@@ -267,14 +267,14 @@ const Navbar = () => {
                       {/* Third level popover here */}
 
                       <NavLink to="/notifications">
-                        <div
+                        <button
                           onClick={() => setActivePopoverFirstLevel(null)}
-                          className="flex items-center m-1 justify-center flex-grow"
+                          className="w-full p-1"
                         >
                           <span className="items-center justify-center p-1 flex text-info text-sm bg-gray-100 hover:bg-gray-200 hover:text-gray-700 rounded-md w-full transition-all">
                             See all notifications
                           </span>
-                        </div>
+                        </button>
                       </NavLink>
                     </Popover>
                   )}

@@ -1,6 +1,7 @@
 import { HiPhoto } from "react-icons/hi2";
 import DialogBox from "./DialogBox";
 import { useState } from "react";
+import AddPostForm from "./AddPostForm";
 
 const PostCreation = ({ user }) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -22,7 +23,12 @@ const PostCreation = ({ user }) => {
         >
           What&lsquo;s on your mind?
         </button>
-        <DialogBox isOpen={isModalOpen} onClose={closeModal} user={user} />
+        <DialogBox isOpen={isModalOpen} onClose={closeModal} user={user}>
+          {{
+            header: <h2 className="text-xl font-semibold">Create a post</h2>,
+            body: <AddPostForm user={user} onClose={closeModal} />,
+          }}
+        </DialogBox>
       </div>
 
       <div className="flex justify-between items-center mt-4 border-t">

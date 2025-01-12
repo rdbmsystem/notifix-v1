@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { HiXMark } from "react-icons/hi2";
 import FocusLock from "react-focus-lock";
-import AddPostForm from "./AddPostForm";
+// import AddPostForm from "./AddPostForm";
 
-const DialogBox = ({ isOpen, onClose, user }) => {
+const DialogBox = ({ isOpen, onClose, children }) => {
   useEffect(() => {
     if (isOpen) {
       // Disable body scroll when the modal is open
@@ -44,7 +44,7 @@ const DialogBox = ({ isOpen, onClose, user }) => {
         tabIndex="-1" // Prevent the modal background from being focusable
       >
         <div className="flex justify-between items-center mb-1 border-b p-4 ">
-          <h2 className="text-xl font-semibold ">Create a post</h2>
+          {children.header}
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 rounded-full  transition-all duration-200 p-[0.4rem] hover:bg-gray-300 bg-gray-200"
@@ -59,7 +59,7 @@ const DialogBox = ({ isOpen, onClose, user }) => {
             firstInput?.focus(); // Set initial focus to the first focusable element
           }}
         >
-          <AddPostForm user={user} onClose={onClose} />
+          {children.body}
         </FocusLock>
       </div>
     </div>

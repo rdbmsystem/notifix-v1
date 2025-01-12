@@ -41,7 +41,7 @@ const NetworkPage = () => {
             <div className="bg-white rounded-lg shadow p-6 text-center mb-6">
               <UserPlus size={48} className="mx-auto text-gray-400 mb-4" />
               <h3 className="text-xl font-semibold mb-2">
-                No Connection Requests
+                No connection requests
               </h3>
               <p className="text-gray-600">
                 You don&apos;t have any pending connection requests at the
@@ -55,7 +55,7 @@ const NetworkPage = () => {
           {connections?.data?.length > 0 && (
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4">My Connections</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {connections.data.map((connection) => (
                   <UserCard
                     key={connection._id}

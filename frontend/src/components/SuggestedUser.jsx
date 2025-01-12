@@ -3,8 +3,9 @@ import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { Check, Clock, Loader, UserCheck, UserPlus, X } from "lucide-react";
+import React from "react";
 
-const RecommendedUser = ({ user }) => {
+const SuggestedUser = ({ user }) => {
   const queryClient = useQueryClient();
 
   const { data: connectionStatus, isLoading } = useQuery({
@@ -21,6 +22,7 @@ const RecommendedUser = ({ user }) => {
         queryKey: ["connectionStatus", user._id],
       });
     },
+
     onError: (error) => {
       toast.error(error.response?.data?.error || "An error occurred");
     },
@@ -147,4 +149,4 @@ const RecommendedUser = ({ user }) => {
     </div>
   );
 };
-export default RecommendedUser;
+export default React.memo(SuggestedUser);

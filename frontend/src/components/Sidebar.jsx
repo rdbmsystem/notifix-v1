@@ -7,7 +7,7 @@ import React from "react";
 
 const Sidebar = ({ user }) => {
   return (
-    <div className="bg-secondary rounded-lg shadow h-[calc(100vh-110px)] flex flex-col ">
+    <div className="bg-secondary rounded-lg shadow h-[calc(100vh-97px)] flex flex-col ">
       <div className="text-center">
         <div
           className="h-16 rounded-t-lg bg-cover bg-center"

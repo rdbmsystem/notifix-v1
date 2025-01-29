@@ -2,7 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { Check, Clock, Loader, UserCheck, UserPlus, X } from "lucide-react";
+import {
+  Check,
+  Clock,
+  Loader,
+  MessageCircle,
+  TrashIcon,
+  UserPlus,
+} from "lucide-react";
 import React from "react";
 
 const SuggestedUser = ({ user }) => {
@@ -56,6 +63,13 @@ const SuggestedUser = ({ user }) => {
     },
   });
 
+  const handleConnect = () => {
+    if (connectionStatus?.data?.status === "not_connected") {
+      console.log(connectionStatus?.data?.status);
+      sendConnectionRequest(user._id);
+    }
+  };
+
   const renderButton = () => {
     if (isLoading) {
       return (
@@ -73,7 +87,7 @@ const SuggestedUser = ({ user }) => {
       case "pending":
         return (
           <button
-            className="px-3 py-1 rounded-full text-sm   flex items-center  bg-gray-200 text-gray-500 "
+            className="px-3 py-1 rounded-full   flex items-center  bg-gray-200 text-gray-500 "
             disabled
           >
             <Clock size={16} className="mr-1" />
@@ -82,7 +96,7 @@ const SuggestedUser = ({ user }) => {
         );
       case "received":
         return (
-          <div className="flex gap-2 ">
+          <div className="flex gap-1 ">
             <button
               onClick={() => acceptRequest(connectionStatus.data.requestId)}
               className={`rounded-full px-3 p-1 text-sm flex items-center justify-center bg-green-500 hover:bg-green-600 text-white`}
@@ -92,21 +106,20 @@ const SuggestedUser = ({ user }) => {
             </button>
             <button
               onClick={() => rejectRequest(connectionStatus.data.requestId)}
-              className={`rounded-full  px-3 p-1 flex text-sm items-center justify-center bg-red-500 hover:bg-red-600 text-white`}
+              className={`rounded-full  px-2 p-2 flex text-sm items-center justify-center bg-red-500 hover:bg-red-600 text-white`}
             >
-              <X size={16} className="mr-1" />
-              Decline
+              <TrashIcon size={16} />
             </button>
           </div>
         );
       case "connected":
         return (
           <button
-            className="px-3 py-1 rounded-full text-sm bg-green-500 text-white flex items-center"
+            className="px-3 py-1 rounded-full text-sm border border-primary text-primary hover:bg-primary hover:text-white transition-colors duration-200 flex items-center"
             disabled
           >
-            <UserCheck size={16} className="mr-1" />
-            Connected
+            <MessageCircle size={16} className="mr-1" />
+            Message
           </button>
         );
       default:
@@ -119,13 +132,6 @@ const SuggestedUser = ({ user }) => {
             Connect
           </button>
         );
-    }
-  };
-
-  const handleConnect = () => {
-    if (connectionStatus?.data?.status === "not_connected") {
-      console.log(connectionStatus?.data?.status);
-      sendConnectionRequest(user._id);
     }
   };
 

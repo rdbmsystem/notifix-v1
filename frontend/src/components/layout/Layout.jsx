@@ -6,7 +6,7 @@ export const Layout = ({ authUser, children }) => {
     <div className="min-h-screen flex flex-col  ">
       <div className="bg-base-100 flex-1">
         <NavBar />
-        <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
+        <main className="max-w-7xl mx-auto px-4 py-20">{children}</main>
       </div>
       <div className="border border-t-base-200">
         {!authUser ? <Footer /> : null}

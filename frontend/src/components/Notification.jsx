@@ -82,6 +82,7 @@ function Notification({ togglePopoverFirstLevel = null }) {
   if (!notifications || notifications.data.length === 0)
     return <p>No notification at the moment.</p>;
 
+  console.log(notifications.data);
   return (
     <ul ref={dropdownRef}>
       {notifications.data.map((notification) => (

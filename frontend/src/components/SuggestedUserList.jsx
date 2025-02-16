@@ -11,7 +11,6 @@ const SuggestedUserList = () => {
     },
   });
 
-  console.log(recommendedUsers);
   return (
     <div className="p-2 w-[50rem] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[80vh] overflow-y-auto will-change-scroll scroll-smooth">
       {recommendedUsers?.map((user) => (

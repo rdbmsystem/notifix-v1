@@ -10,13 +10,31 @@ import {
 import { NavLink } from "react-router-dom";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import useChat from "../hooks/useChat.js";
 
 function UserCard({ user }) {
+  const { openChatbox } = useChat();
   const queryClient = useQueryClient();
-
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
   const { data: connectionStatus, isLoading } = useQuery({
     queryKey: ["connectionStatus", user._id],
     queryFn: () => axiosInstance.get(`/connections/status/${user._id}`),
+  });
+
+  const { mutate: createChat } = useMutation({
+    mutationFn: async (chatData) => {
+      const res = await axiosInstance.post("/chats/personal", chatData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["chats"] });
+    },
+
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to create chat");
+    },
   });
 
   const { mutate: sendConnectionRequest } = useMutation({
@@ -61,6 +79,19 @@ function UserCard({ user }) {
       toast.error(error.response?.data?.error || "An error occurred");
     },
   });
+
+  const handleChatCreation = async (otherUserId) => {
+    try {
+      const chatData = {
+        user1: authUser._id,
+        user2: otherUserId,
+      };
+      createChat(chatData);
+      openChatbox(user);
+    } catch (error) {
+      console.error("Error in handleChatCreation:", error);
+    }
+  };
 
   const handleConnect = () => {
     if (connectionStatus?.data?.status === "not_connected") {
@@ -114,8 +145,8 @@ function UserCard({ user }) {
       case "connected":
         return (
           <button
+            onClick={() => handleChatCreation(user._id)}
             className="mt-2 border border-primary text-primary px-4 py-2 rounded-full hover:bg-primary hover:text-white transition-colors w-full flex items-center justify-center"
-            disabled
           >
             <MessageCircle size={16} className="mr-1" />
             Message

@@ -23,6 +23,7 @@ import Notification from "../Notification";
 import Tooltip from "../Tooltip";
 import Popover from "../Popover";
 import useClickOutside from "../../hooks/useOutsideClick";
+import ChatList from "../ChatList";
 
 const Navbar = () => {
   const queryClient = useQueryClient();
@@ -34,6 +35,7 @@ const Navbar = () => {
   const buttonSecondLevelRef = useRef(null);
   const location = useLocation();
   const isNotificationsRoute = location.pathname === "/notifications";
+  const isMessagesRoute = location.pathname === "/messages";
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
   useClickOutside(dropdownFirstLevelRef, () => {
@@ -86,7 +88,9 @@ const Navbar = () => {
                 alt="notifix"
               />
             </Link>
-            <div className="ml-4">{authUser ? <SearchBar /> : null}</div>
+            <div className="ml-4">
+              {authUser ? <SearchBar inputClass="py-1" /> : null}
+            </div>
           </div>
           {authUser ? (
             <div className="flex items-center flex-none">
@@ -186,18 +190,74 @@ const Navbar = () => {
                 <div className="relative">
                   <NavLink
                     onClick={() => togglePopoverFirstLevel("Messages")}
-                    to="/messages"
-                    className={({ isActive }) =>
-                      `size-9 rounded-full hover:bg-base-300 bg-base-200 flex justify-center items-center relative group transition-all ${
-                        isActive ? "bg-base-300" : ""
-                      } `
-                    }
+                    className={`size-9 rounded-full hover:bg-base-300 bg-base-200 flex justify-center items-center relative group transition-all ${
+                      activePopoverFirstLevel === "Messages" || isMessagesRoute
+                        ? "bg-green-100 hover:bg-green-200"
+                        : ""
+                    }`}
                   >
-                    <BiSolidMessageRounded size={20} />
+                    <BiSolidMessageRounded
+                      size={20}
+                      className={
+                        activePopoverFirstLevel === "Messages" ||
+                        isMessagesRoute
+                          ? "text-primary"
+                          : ""
+                      }
+                    />
+                    {unreadNotificationCount > 0 && (
+                      <span
+                        className="absolute -top-1 left-5 md:right-4 bg-red-500 text-white text-[10px]
+                            rounded-full size-4 md:size-4 flex items-center justify-center"
+                      >
+                        {unreadNotificationCount}
+                      </span>
+                    )}
                     <Tooltip description="Messages" />
                   </NavLink>
                   {activePopoverFirstLevel === "Messages" && (
-                    <div className="absolute -right-[100px] top-[42px] bg-secondary rounded-b-lg rounded-tl-lg shadow-sides w-[18rem] h-[40rem]   z-10"></div>
+                    <Popover className="absolute -right-[100px] top-[42px] bg-secondary rounded-b-lg rounded-tl-lg shadow-sides w-[18rem] h-[40rem]   z-10">
+                      <div className="relative flex flex-row justify-between p-2 items-center">
+                        <h1 className="font-semibold text-xl">Messages</h1>
+                        {/* Chat options */}
+                        <div ref={dropdownSecondLevelRef}>
+                          <button
+                            ref={buttonSecondLevelRef}
+                            onClick={togglePopoverSecondLevel}
+                            className="text-info hover:text-gray-700 hover:bg-gray-200 p-2 rounded-full"
+                          >
+                            <MoreHorizontal size={16} />
+                          </button>
+                          {activePopoverSecondLevel && (
+                            <Popover className="absolute right-4 bg-secondary  rounded-b-lg rounded-tl-lg shadow-sides w-[13rem] p-2  z-20 ">
+                              <button
+                                onClick={() => console.log("Mark all as read")}
+                                className="flex items-center p-1  text-info hover:bg-base-100 w-full text-sm rounded-md transition-all "
+                              >
+                                <Check size={16} className="mr-2" />
+                                <span>Chat options</span>
+                              </button>
+                            </Popover>
+                          )}
+                        </div>
+                        {/* Chat options */}
+                      </div>
+                      <div className="border-b"></div>
+                      <div className="flex flex-col p-2">
+                        <SearchBar />
+                      </div>
+                      <div className="flex flex-row px-2 gap-x-2 pb-2 ">
+                        <button className="border border-green-100 rounded-full px-2 bg-green-100 text-primary font-semibold text-md transition-all">
+                          Inbox
+                        </button>
+                        <button className=" hover:border-gray-100 rounded-full px-2 hover:bg-gray-100 text-info font-semibold text-md transition-all">
+                          Group
+                        </button>
+                      </div>
+                      <div className="flex flex-col overflow-y-auto h-[35rem] px-1 pt-1 will-change-scroll scroll-smooth">
+                        <ChatList />
+                      </div>
+                    </Popover>
                   )}
                 </div>
                 <div className="relative">
